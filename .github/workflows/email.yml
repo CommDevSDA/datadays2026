@@ -1,6 +1,8 @@
 name: 'Email Notification Workflow'
 
 on: workflow_dispatch
+schedule:
+ - cron: 0 8 * * Mon
 
 jobs:
   email:
@@ -10,12 +12,16 @@ jobs:
       - name: "Convert Notebook"
         run: |
           ## run jupyter and convert to html
+          pip install jupyter
+          pip install -r requirements.txt
+          jupyter noconvert --to html --execute analysis.ipynb -- no-input
       - name: 'Send Mail'
         uses: dawidd6/action-send-mail@v18
         with:
           server_address: smtp.gmail.com
-          username: 
-          password: 
+          username: ${{secrets.mail_username}}
+          password: ${{secrets.mail_userpassword}}
           subject: Github Actions Test
-          to: ## relevant email addresses
-          html_body: file://
+          to: chong@clevelandohio.gov
+          from:chong@clevelandohio.gov
+          html_body: file://analysis.html
